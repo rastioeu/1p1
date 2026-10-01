@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1+1=1</title>
+<meta name="description" content="1+1=1 — zoznamka postavená na overených reálnych ľuďoch. / A dating app built on verified real people.">
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 24px 20px 64px; line-height: 1.6; color: #000; background: #fff; }
+  h1 { font-size: 1.6rem; } h2 { font-size: 1.15rem; margin-top: 2em; }
+  @media (prefers-color-scheme: dark) { body { color: #f0f0f0; background: #0a0a0a; } a { color: #9ecbff; } }
+  a { color: #0645ad; }
+  .updated { color: #767676; font-size: 0.9rem; }
+  .btn { display: inline-block; margin-top: 8px; padding: 12px 22px; border-radius: 999px; background: #000; color: #fff; text-decoration: none; font-weight: 700; }
+  @media (prefers-color-scheme: dark) { .btn { background: #f0f0f0; color: #000; } }
+  .stav { font-weight: 700; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<!-- Rastio 1. 10. 2026 — cieľ odkazu v pozvánkach z appky. Odkaz sa po vydaní NEMENÍ, mení sa
+     len obsah: tlačidlo App Store zapne admin v Konfigurácii (pozvi_app_store + app_store_url),
+     stránka si stav číta zo služby 1+1=1. Žiadne sledovanie, žiadne údaje o tom, kto pozval. -->
+<main id="sk" lang="sk">
+<h1>1+1=1</h1>
+<p>Zoznamka postavená na overených reálnych ľuďoch. Bez nekonečného swipovania — cieľ je stretnutie.</p>
+<p>Appka je len pre dospelých (18+). Každý prejde krátkym skenom tváre priamo v appke a na profilovej fotke je skutočne on.</p>
+<p class="stav" data-stav="caka">Čoskoro v App Store.</p>
+<p data-stav="app" hidden><a class="btn" data-odkaz href="#">Stiahnuť v App Store</a></p>
+<p><a href="/podmienky">Podmienky</a> · <a href="/zasady">Zásady ochrany súkromia</a> · <a href="/podpora">Podpora</a></p>
+</main>
+<main id="en" lang="en" hidden>
+<h1>1+1=1</h1>
+<p>A dating app built on verified real people. No endless swiping — the goal is meeting.</p>
+<p>The app is for adults only (18+). Everyone completes a short face scan right in the app, and the profile photo really is them.</p>
+<p class="stav" data-stav="caka">Coming soon to the App Store.</p>
+<p data-stav="app" hidden><a class="btn" data-odkaz href="#">Download on the App Store</a></p>
+<p><a href="/en/terms">Terms</a> · <a href="/en/privacy">Privacy Policy</a> · <a href="/en/support">Support</a></p>
+</main>
+<script>
+(function () {
+  var jazyky = (navigator.languages || [navigator.language || "sk"]).map(function (j) { return String(j).toLowerCase(); });
+  var sk = jazyky.some(function (j) { return j.indexOf("sk") === 0 || j.indexOf("cs") === 0; });
+  if (!sk) { document.getElementById("sk").hidden = true; document.getElementById("en").hidden = false; document.documentElement.lang = "en"; }
+  fetch("https://api.joinfamiglia.com/eleven/attest/pozvi-stav", { credentials: "omit" })
+    .then(function (r) { return r.ok ? r.json() : {}; })
+    .then(function (d) {
+      var url = d && d.app_store_url;
+      if (typeof url !== "string" || url.indexOf("https://apps.apple.com/") !== 0) return;
+      document.querySelectorAll('[data-stav="caka"]').forEach(function (e) { e.hidden = true; });
+      document.querySelectorAll('[data-stav="app"]').forEach(function (e) { e.hidden = false; });
+      document.querySelectorAll("[data-odkaz]").forEach(function (a) { a.href = url; });
+    })
+    .catch(function () {});
+})();
+</script>
+</body>
+</html>
